@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión y Registro</title>
+    <link rel="stylesheet" href="stylel.css">
+</head>
+<body>
+    <div class="container">
+            <div class="form-container">
+                <h2>Registro de Usuario</h2>
+                <form id="registerForm">
+                    <label for="registerUsername">Nombre de usuario:</label>
+                    <input type="text" id="registerUsername" name="username" required>
+                    <label for="registerPassword">Contraseña:</label>
+                    <input type="password" id="registerPassword" name="password" required>
+                    <label for="registerEmail">Correo Electrónico:</label>
+                    <input type="email" id="registerEmail" name="email" required>
+                    <button type="submit">Registrar</button>
+                    <br>
+                    <br>
+                    <button type="submit" onclick="location.href='login.html'">Iniciar Sesión</button>
+                    <br>
+                    <br>
+                    <button class="home" type="submit" onclick="location.href='../Products/products.html'">Regresar</button>
+                </form>
+            </div>
+   
+    <div id="response"></div>
+    </div>  
+
+    <script>
+        // Manejador de registro
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const registerData = {
+                username: document.getElementById('registerUsername').value,
+                password: document.getElementById('registerPassword').value,
+                email: document.getElementById('registerEmail').value
+            };
+
+            fetch('http://localhost:8080/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(registerData)
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('response').innerText = data;
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Error: ' + error;
+            });
+        });
+
+    </script>
+</body>
+</html>

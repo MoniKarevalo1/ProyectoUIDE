@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión y Registro</title>
+    <link rel="stylesheet" href="stylel.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Inicio de Sesión</h2>
+            <form id="loginForm">
+                <label for="loginUsername">Nombre de usuario:</label>
+                <input type="text" id="loginUsername" name="username" required>
+                <label for="loginPassword">Contraseña:</label>
+                <input type="password" id="loginPassword" name="password" required>
+                <button type="submit">Iniciar Sesión</button>
+                <br>
+                <br>
+                <button type="submit" onclick="location.href='registro.html'">Registro de Usuario</button>
+                <br>
+                <br>
+                <button class="home" type="submit" onclick="location.href='../Products/products.html'">Regresar</button>
+                
+            </form>
+        </div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        // Manejador de inicio de sesión
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const loginData = {
+                username: document.getElementById('loginUsername').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            fetch('http://localhost:8080/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            })
+            .then(response =>  {
+            if (response.ok) {
+                    window.location.href = '../Products/products.html';
+                } else {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Error: ' + error;
+            });
+        });
+    </script>
+</body>
+</html>

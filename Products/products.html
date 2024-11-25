@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gadgets Tecnológicos</title>
+    <link rel="stylesheet" href="stylep.css"> <!-- Enlaza el archivo CSS -->
+</head>
+<body>
+    <header>
+    <table>
+        <tr>
+            <td><img src="logo.png" alt="Logo" class="logo"></td>
+            <td>
+
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar productos...">
+                    <button onclick="searchProducts()">Buscar</button>
+                </div>
+            </td>
+            <td><button onclick="location.href='../Login/login.html'">Iniciar Sesión</button></td>
+            <td><button onclick="location.href='../Login/registro.html'">Registrar</button></td>
+            <td>
+                <img src="carrito.png" alt="Logo" class="logo">
+            </td>
+        </tr>
+    </table>
+    </header>
+    <main>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="r_virtual.jpg" alt="Nombre del Producto 1">
+                <h2>Realidad Virtual</h2>
+                <p>Productos Gadget de Realidad Virtual</p>
+                <!--  <p class="price">$99.99</p>-->
+            </div>
+            <div class="product-card">
+                <img src="r_inteligentes.jpg" alt="Nombre del Producto 1">
+                <h2>Relojes Inteligentes</h2>
+                <p>Variedad de Relojes Inteligentes</p>
+                <!--  <p class="price">$99.99</p>-->
+            </div>
+            <div class="product-card">
+                <img src="g_juegos.jpg" alt="Nombre del Producto 2">
+                <h2>Gadgets para Juegos</h2>
+                <p>Equipos para completar tus partidas de juego</p>
+                <p class="price">$149.99</p>
+            </div>
+            <!-- Añade más productos según sea necesario -->
+        </div>
+    </main>
+</body>
+</html>
