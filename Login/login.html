@@ -21,7 +21,7 @@
                 <button type="submit" onclick="location.href='registro.html'">Registro de Usuario</button>
                 <br>
                 <br>
-                <button class="home" type="submit" onclick="location.href='../Products/products.html'">Regresar</button>
+                <button class="home" type="submit" onclick="location.href='../productos/products.html'">Regresar</button>
                 
             </form>
         </div>
@@ -47,7 +47,7 @@
             })
             .then(response =>  {
             if (response.ok) {
-                    window.location.href = '../Products/products.html';
+                    window.location.href = '../productos/inicio.html';
                 } else {
                     return response.text().then(text => { throw new Error(text) });
                 }

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración de E-commerce</title>
+    <link rel="stylesheet" href="stylec.css">
+    <script>
+        // Funciones de Inserción
+        async function insertarCategoria() {
+            const nombre = document.getElementById('nombreCategoria').value;
+            const response = await fetch('http://localhost:8080/categorias', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre })
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarCategorias();
+                limpiarFormularioCategoria();
+            }
+        }
+
+        async function insertarUsuario() {
+            const tipo = document.getElementById('tipoUsuario').value;
+            const nombre = document.getElementById('nombreUsuario').value;
+            const email = document.getElementById('emailUsuario').value;
+            const password = document.getElementById('passwordUsuario').value;
+            const response = await fetch('http://localhost:8080/usuarios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ tipo, nombre, email, password })
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarUsuarios();
+                limpiarFormularioUsuario();
+            }
+        }
+
+        async function insertarProducto() {
+        const nombre = document.getElementById('nombreProducto').value;
+        const precio = parseFloat(document.getElementById('precioProducto').value);
+        const stock = parseInt(document.getElementById('stockProducto').value);
+
+        const categoriaID = parseInt(document.getElementById("categoriaID").value);
+        if (!categoriaID) {
+        alert("Debe seleccionar una categoría válida.");
+        return;
+}
+
+        console.log(`Nombre: ${nombre}, Precio: ${precio}, Stock: ${stock}, CategoriaID: ${categoriaID}`); // Verifica los valores
+
+    try {
+        const response = await fetch('http://localhost:8080/productos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ nombre, precio, stock, categoriaID })
+        });
+
+        const data = await response.json();
+        console.log(data);  // Verifica la respuesta del servidor
+
+        if (response.ok) {
+            alert(data.message);
+            cargarProductos(); // Actualiza la lista de productos
+            limpiarFormularioProducto(); // Limpia el formulario
+        } else {
+            alert(data.error || "Error al insertar producto");
+        }
+    } catch (error) {
+        console.error('Error al insertar producto:', error);
+        alert('Error al insertar producto');
+    }
+}
+
+
+        function limpiarFormularioProducto() {
+        document.getElementById('nombreProducto').value = '';
+        document.getElementById('precioProducto').value = '';
+        document.getElementById('stockProducto').value = '';
+        document.getElementById('categoriaID').value = '';
+        }
+
+
+        // Funciones de Carga
+        async function cargarCategorias() {
+    try {
+        const response = await fetch('http://localhost:8080/categorias');
+        if (!response.ok) {
+            throw new Error("Error al obtener categorías");
+        }
+        const categorias = await response.json();
+
+        // Cargar opciones en el select para productos
+        const selectCategoria = document.getElementById('categoriaID');
+        selectCategoria.innerHTML = ''; // Limpia opciones anteriores
+        categorias.forEach(categoria => {
+            const option = document.createElement('option');
+            option.value = categoria.id; // ID de la categoría
+            option.textContent = categoria.nombre; // Nombre de la categoría
+            selectCategoria.appendChild(option);
+        });
+
+        // Cargar las categorías en la tabla
+        const tablaCategorias = document.getElementById('tablaCategorias');
+        tablaCategorias.innerHTML = ''; // Limpiar las filas anteriores
+
+        categorias.forEach(categoria => {
+            const row = tablaCategorias.insertRow();
+            row.innerHTML = `
+                <td>${categoria.nombre}</td>
+                <td>
+                    <button onclick="editarCategoria(${categoria.id})">Editar</button>
+                    <button onclick="borrarCategoria(${categoria.id})">Borrar</button>
+                </td>
+            `;
+        });
+    } catch (error) {
+        console.error('Error al cargar categorías:', error);
+    }
+}
+
+
+        // Llamar a esta función cuando la página cargue
+        document.addEventListener('DOMContentLoaded', cargarCategorias);
+
+
+        async function cargarUsuarios() {
+            const response = await fetch('http://localhost:8080/usuarios');
+            const usuarios = await response.json();
+            const tabla = document.getElementById('tablaUsuarios');
+            tabla.innerHTML = '';
+
+            usuarios.forEach(usuario => {
+                const row = tabla.insertRow();
+                row.innerHTML = `
+                    <td>${usuario.tipo}</td>
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.email}</td>
+                    <td>
+                        <button onclick="editarUsuario(${usuario.id})">Editar</button>
+                        <button onclick="borrarUsuario(${usuario.id})">Borrar</button>
+                    </td>
+                `;
+            });
+        }
+
+        async function cargarProductos() {
+            const response = await fetch('http://localhost:8080/productos');
+            const productos = await response.json();
+            const tabla = document.getElementById('tablaProductos');
+            tabla.innerHTML = '';
+
+            productos.forEach(producto => {
+                const row = tabla.insertRow();
+                row.innerHTML = `
+                    <td>${producto.nombre}</td>
+                    <td>${producto.precio}</td>
+                    <td>${producto.stock}</td>
+                    <td>${producto.categoria_id}</td>
+                    <td>
+                        <button onclick="editarProducto(${producto.id})">Editar</button>
+                        <button onclick="borrarProducto(${producto.id})">Borrar</button>
+                    </td>
+                `;
+            });
+        }
+
+        // Funciones de Edición
+        async function editarCategoria(id) {
+            const nombre = prompt('Nuevo nombre:');
+            const response = await fetch(`http://localhost:8080/categorias/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre })
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarCategorias();
+            }
+        }
+
+        async function editarUsuario(id) {
+            const tipo = prompt('Nuevo tipo:');
+            const nombre = prompt('Nuevo nombre:');
+            const email = prompt('Nuevo email:');
+            const password = prompt('Nuevo password:');
+            const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ tipo, nombre, email, password })
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarUsuarios();
+            }
+        }
+
+        async function editarProducto(id) {
+            const nombre = prompt('Nuevo nombre:');
+            const precio = prompt('Nuevo precio:');
+            const stock = prompt('Nuevo stock:');
+            const categoriaID = prompt('Nuevo ID de categoría:');
+            const response = await fetch(`http://localhost:8080/productos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre, precio, stock, categoriaID })
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarProductos();
+            }
+        }
+
+        // Funciones de Borrado
+        async function borrarCategoria(id) {
+            const response = await fetch(`http://localhost:8080/categorias/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarCategorias();
+            }
+        }
+
+        async function borrarUsuario(id) {
+            const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarUsuarios();
+            }
+        }
+
+        async function borrarProducto(id) {
+            const response = await fetch(`http://localhost:8080/productos/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            if (data.message) {
+                alert(data.message);
+                cargarProductos();
+            }
+        }
+
+        // Funciones de Limpieza de Formularios
+        function limpiarFormularioCategoria() {
+            document.getElementById('nombreCategoria').value = '';
+        }
+
+        function limpiarFormularioUsuario() {
+            document.getElementById('tipoUsuario').value = '';
+            document.getElementById('nombreUsuario').value = '';
+            document.getElementById('emailUsuario').value = '';
+            document.getElementById('passwordUsuario').value = '';
+        }
+
+        function limpiarFormularioProducto() {
+            document.getElementById('nombreProducto').value = '';
+            document.getElementById('precioProducto').value = '';
+            document.getElementById('stockProducto').value = '';
+            document.getElementById('categoriaID').value = '';
+        }
+
+        // Cargar datos al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarCategorias();
+            cargarUsuarios();
+            cargarProductos();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Panel de Administración de E-commerce</h1>
+
+        <div class="form-container">
+            <h2>Insertar Categoría</h2>
+            <input type="text" id="nombreCategoria" placeholder="Nombre de la Categoría">
+            <button onclick="insertarCategoria()">Insertar Categoría</button>
+        </div>
+
+        <div class="table-container">
+            <h2>Lista de Categorías</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCategorias">
+                    <!-- Las categorías se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-container">
+            <h2>Insertar Usuario</h2>
+            <input type="text" id="tipoUsuario" placeholder="Tipo de Usuario (cliente/proveedor/administrador)">
+            <input type="text" id="nombreUsuario" placeholder="Nombre del Usuario">
+            <input type="email" id="emailUsuario" placeholder="Email del Usuario">
+            <input type="password" id="passwordUsuario" placeholder="Password del Usuario">
+            <button onclick="insertarUsuario()">Insertar Usuario</button>
+        </div>
+    
+        <div class="table-container">
+            <h2>Lista de Usuarios</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios">
+                    <!-- Los usuarios se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-container">
+            <h2>Insertar Producto</h2>
+            <input type="text" id="nombreProducto" placeholder="Nombre del Producto">
+            <input type="number" id="precioProducto" placeholder="Precio del Producto">
+            <input type="number" id="stockProducto" placeholder="Stock del Producto">
+            <select id="categoriaID">
+                <option value="">Seleccione una Categoría</option>
+            </select>
+            <button onclick="insertarProducto()">Insertar Producto</button>
+        </div>
+
+        <div class="table-container">
+            <h2>Lista de Productos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos">
+                    <!-- Los productos se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
